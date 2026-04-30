@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="互動式世界時區轉換器：點選世界地圖時區，高亮該區主要城市，支援即時與指定時間換算。" />
+  <title>世界時區轉換器｜互動地圖版</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./src/styles.css" />
+  <script defer src="./src/app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">🌐</div>
+        <div>
+          <p class="eyebrow">World Time Zone Dashboard</p>
+          <h1>世界時區轉換器</h1>
+          <p class="hero-text">點選地圖時區，高亮該區主要城市，快速比較全球時間。</p>
+        </div>
+      </div>
+
+      <aside class="now-card" aria-label="本地時間">
+        <div class="clock-face" aria-hidden="true"><span></span></div>
+        <div>
+          <p class="label">現在時間（您的裝置）</p>
+          <p id="localNow" class="now-time">--:--:--</p>
+          <p id="localZone" class="muted">偵測中</p>
+        </div>
+        <button id="mode24" class="btn ghost" type="button">24 小時制</button>
+      </aside>
+    </header>
+
+    <section class="controls" aria-label="時區換算控制">
+      <label class="field">
+        <span>基準時間</span>
+        <input id="baseTime" type="datetime-local" />
+      </label>
+
+      <label class="field search-field">
+        <span>搜尋</span>
+        <input id="search" type="search" placeholder="搜尋城市 / 國家 / UTC+8 / Tokyo" autocomplete="off" />
+      </label>
+
+      <div class="button-group" role="group" aria-label="時間模式">
+        <button id="liveBtn" class="btn active" type="button">即時</button>
+        <button id="convertBtn" class="btn" type="button">指定時間</button>
+        <button id="clearBtn" class="btn ghost" type="button">清除篩選</button>
+      </div>
+    </section>
+
+    <section class="map-panel" aria-labelledby="mapTitle">
+      <div class="map-head">
+        <div>
+          <p class="eyebrow">Interactive Time Zone Map</p>
+          <h2 id="mapTitle">互動世界地圖</h2>
+        </div>
+        <div id="selectionSummary" class="selection-summary">尚未選取時區：顯示全部城市</div>
+      </div>
+
+      <div class="map-wrap atlas-map" id="mapWrap">
+        <img
+          class="reference-map"
+          src="./assets/world-timezone-reference.jpg"
+          alt="標準世界時區地圖，包含國家邊界、城市、海洋與 UTC 時區界線"
+          draggable="false"
+        />
+
+        <svg id="worldMap" class="world-map zone-overlay" viewBox="0 0 1536 828" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <filter id="zoneGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#ffd966" flood-opacity=".55"/>
+            </filter>
+            <linearGradient id="selectedZoneGradient" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="#ffe88c" stop-opacity=".42"/>
+              <stop offset="48%" stop-color="#ffcf4d" stop-opacity=".26"/>
+              <stop offset="100%" stop-color="#ff9f43" stop-opacity=".20"/>
+            </linearGradient>
+          </defs>
+          <g id="zoneLayer" aria-label="可點選時區色帶"></g>
+          <g id="zoneGuideLayer" class="zone-guide-layer" aria-hidden="true"></g>
+        </svg>
+
+        <div id="cityLayer" class="city-layer" aria-label="城市標記"></div>
+
+        <div class="map-title-ribbon" aria-hidden="true">
+          <span>STANDARD TIME ZONES OF THE WORLD</span>
+          <small>click UTC bands to highlight major cities</small>
+        </div>
+
+        <div class="map-legend" aria-label="地圖圖例">
+          <span><i class="legend-dot active"></i>選取時區城市</span>
+          <span><i class="legend-dot"></i>其他城市</span>
+          <span><i class="legend-line"></i>可點選 UTC 色帶</span>
+        </div>
+      </div>
+    </section>
+
+    <main class="content-grid">
+      <section class="panel utc-panel">
+        <p class="eyebrow">UTC Reference</p>
+        <h2>協調世界時</h2>
+        <div id="utcNow" class="utc-clock">--:--:--</div>
+        <p id="utcDate" class="muted center">---- -- --</p>
+      </section>
+
+      <section class="panel selected-panel">
+        <p class="eyebrow">Selected Zone</p>
+        <h2>選取時區</h2>
+        <div id="selectedZoneCard" class="selected-zone-card">尚未選取，點選地圖色帶查看該區城市。</div>
+      </section>
+    </main>
+
+    <main id="tables" class="tables" aria-live="polite"></main>
+
+    <footer class="footer">
+      <div>
+        <strong>操作說明</strong>
+        <p>點選地圖時區色帶即可高亮該 UTC 區內的主要城市；再點一次同一時區可取消。</p>
+      </div>
+      <div>
+        <strong>時間規則</strong>
+        <p>城市時間使用瀏覽器內建 IANA 時區與夏令時間資料計算；UTC 標籤為城市常用標準時區分組。</p>
+      </div>
+      <div>
+        <strong>GitHub Pages</strong>
+        <p>此版本採靜態檔案架構，不需後端。將整包放入 repository 後即可部署。</p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
