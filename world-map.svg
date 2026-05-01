@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1536 720" role="img" aria-labelledby="title desc">
+  <title id="title">Stylized world map for timezone converter</title>
+  <desc id="desc">A polished, recognizable vector world map with ocean, graticules and simplified continent shapes.</desc>
+  <defs>
+    <linearGradient id="oceanGradient" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0b2942"/>
+      <stop offset="42%" stop-color="#0c3b5c"/>
+      <stop offset="100%" stop-color="#07131f"/>
+    </linearGradient>
+    <linearGradient id="landGradient" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#bfe8bd"/>
+      <stop offset="50%" stop-color="#6da673"/>
+      <stop offset="100%" stop-color="#2e5a4b"/>
+    </linearGradient>
+    <linearGradient id="iceGradient" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#eef8ff"/>
+      <stop offset="100%" stop-color="#aac6d6"/>
+    </linearGradient>
+    <filter id="landShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#00101a" flood-opacity=".45"/>
+    </filter>
+    <pattern id="gridPattern" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M64 0H0V64" fill="none" stroke="#ffffff" stroke-opacity=".09" stroke-width="1"/>
+    </pattern>
+    <style>
+      .land{fill:url(#landGradient);stroke:#d9ffcf;stroke-opacity:.28;stroke-width:2;filter:url(#landShadow)}
+      .island{fill:#7fbb78;stroke:#e7ffd5;stroke-opacity:.25;stroke-width:1.4;filter:url(#landShadow)}
+      .ice{fill:url(#iceGradient);stroke:#fff;stroke-opacity:.35;stroke-width:2;filter:url(#landShadow)}
+      .graticule{fill:none;stroke:#d7f3ff;stroke-opacity:.13;stroke-width:1}
+      .label-map{fill:#d7edf8;font:700 18px system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.04em;opacity:.55}
+    </style>
+  </defs>
+  <rect width="1536" height="720" fill="url(#oceanGradient)"/>
+  <rect width="1536" height="720" fill="url(#gridPattern)" opacity=".72"/>
+  <g opacity=".22">
+    <path fill="#74f1ff" d="M0 0h56.5v720H0zM113 0h56.5v720H113zM226 0h56.5v720H226zM339 0h56.5v720H339zM452 0h56.5v720H452zM565 0h56.5v720H565zM678 0h56.5v720H678zM791 0h56.5v720H791zM904 0h56.5v720H904zM1017 0h56.5v720H1017zM1130 0h56.5v720H1130zM1243 0h56.5v720H1243zM1356 0h56.5v720H1356zM1469 0h67v720h-67z"/>
+  </g>
+  <g>
+    <path class="graticule" d="M0 360H1536M0 240H1536M0 480H1536M256 0V720M512 0V720M768 0V720M1024 0V720M1280 0V720"/>
+  </g>
+  <path class="land" d="M78 230C124 142 236 90 352 108c78 12 132 45 192 88 42 30 87 31 113 72 27 42-2 77-43 93-55 22-62 62-115 76-38 10-78-8-113-32-34-23-72-17-105 5-52 34-123 8-154-37-28-41-79-67-49-143Z"/>
+  <path class="land" d="M352 433c50-15 94-1 125 28 26 25 47 65 38 105-10 45-38 83-80 83-25 0-42-23-46-51-5-39-33-54-55-83-22-28-18-67 18-82Z"/>
+  <path class="ice" d="M452 50c74-30 164-12 195 31 26 36 7 73-47 91-55 19-139 8-177-27-36-35-24-74 29-95Z"/>
+  <path class="land" d="M496 426c50 7 100 40 117 92 18 56-22 90-22 137 0 41-17 75-51 85-42 12-68-26-59-66 14-65-37-92-45-143-8-55 9-112 60-105Z"/>
+  <path class="land" d="M690 208c54-39 152-45 199-6 32 27 19 65-20 80-26 10-35 36-71 44-43 10-92-4-127-29-41-31-29-67 19-89Z"/>
+  <path class="land" d="M757 307c71-24 154 8 185 73 26 56 11 139-33 189-31 35-66 78-119 64-44-12-45-61-68-93-23-34-73-53-66-103 8-63 45-111 101-130Z"/>
+  <path class="land" d="M846 179c113-54 287-62 416-10 95 38 142 112 112 181-25 56-91 68-151 55-48-10-93-7-132 26-44 36-111 32-154-4-38-32-54-76-101-88-43-11-83-44-83-86 0-31 33-56 93-74Z"/>
+  <path class="land" d="M1032 400c65-2 122 32 144 85 19 47-1 86-47 96-47 11-76-19-91-58-14-36-55-61-38-94 7-16 16-25 32-29Z"/>
+  <path class="land" d="M1192 566c66-40 161-31 218 18 40 35 32 83-13 106-65 33-162 11-207-42-24-28-23-65 2-82Z"/>
+  <path class="ice" d="M0 684c94-28 202-16 294-19 95-4 172-33 271-23 100 10 160 43 252 42 90 0 160-35 257-28 104 7 188 41 287 31 59-6 116-16 175-2v35H0Z"/>
+</svg>
