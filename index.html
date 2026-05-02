@@ -6,34 +6,57 @@
 <title>世界時區轉換器</title>
 
 <style>
-body {
+body{
   margin:0;
   background:#0b1420;
   color:#fff;
   font-family:sans-serif;
 }
 
-.topbar{
+/* 上方 */
+.top{
   padding:10px 20px;
-  font-size:18px;
   background:#111c2a;
+  font-size:18px;
   border-bottom:1px solid #333;
 }
 
-.container{
-  display:flex;
-  flex-direction:column;
-}
-
+/* 地圖 */
 .map{
+  position:relative;
   height:320px;
-  background:#1a2a3a;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#888;
+  background:#081018;
+  overflow:hidden;
 }
 
+.zone{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:40px;
+  cursor:pointer;
+  opacity:.15;
+}
+
+.zone:hover{opacity:.4}
+.zone.active{background:#ffd54f; opacity:.5}
+
+/* 城市點 */
+.dot{
+  position:absolute;
+  width:8px;
+  height:8px;
+  background:#4fc3f7;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+}
+
+.dot.active{
+  background:#ff5252;
+  transform:translate(-50%,-50%) scale(1.5);
+}
+
+/* 搜尋 */
 .search{
   padding:10px;
   background:#111c2a;
@@ -46,9 +69,10 @@ input{
   border:none;
 }
 
+/* 清單 */
 .grid{
   display:grid;
-  grid-template-columns: repeat(2,1fr);
+  grid-template-columns:repeat(2,1fr);
   gap:10px;
   padding:10px;
 }
@@ -57,6 +81,12 @@ input{
   background:#111c2a;
   padding:10px;
   border-radius:8px;
+}
+
+.title{
+  margin-bottom:6px;
+  font-size:14px;
+  color:#aaa;
 }
 
 .city{
@@ -72,90 +102,130 @@ input{
 
 <body>
 
-<div class="topbar">🌐 時區轉換器</div>
+<div class="top">🌐 時區轉換器</div>
 
-<div class="container">
-
-<div class="map" id="map">
-（地圖區域 - 點選城市或搜尋會高亮）
-</div>
+<div class="map" id="map"></div>
 
 <div class="search">
-<input id="search" placeholder="搜尋城市（例如：巴黎）">
+<input id="search" placeholder="搜尋城市（巴黎 / 東京 / 紐約）">
 </div>
 
 <div class="grid" id="list"></div>
 
-</div>
-
 <script>
 
+/* 城市資料（已套用你規則） */
 const cities = [
 
 /* 亞洲 */
-{c:"東京",country:"日本",utc:9,region:"亞洲"},
-{c:"首爾",country:"韓國",utc:9,region:"亞洲"},
-{c:"新加坡",country:"新加坡",utc:8,region:"亞洲"},
-{c:"曼谷",country:"泰國",utc:7,region:"亞洲"},
-{c:"德里",country:"印度",utc:5.5,region:"亞洲"},
+{n:"東京",u:9,x:80,y:120,region:"亞洲"},
+{n:"首爾",u:9,x:85,y:110,region:"亞洲"},
+{n:"曼谷",u:7,x:75,y:150,region:"亞洲"},
+{n:"德里",u:5.5,x:70,y:140,region:"亞洲"},
+{n:"新加坡",u:8,x:78,y:170,region:"亞洲"},
 
 /* 歐洲 */
-{c:"巴黎",country:"法國",utc:1,region:"歐洲"},
-{c:"倫敦",country:"英國",utc:0,region:"歐洲"},
-{c:"柏林",country:"德國",utc:1,region:"歐洲"},
-{c:"羅馬",country:"義大利",utc:1,region:"歐洲"},
-{c:"馬德里",country:"西班牙",utc:1,region:"歐洲"},
+{n:"倫敦",u:0,x:45,y:90,region:"歐洲"},
+{n:"巴黎",u:1,x:48,y:95,region:"歐洲"},
+{n:"柏林",u:1,x:52,y:90,region:"歐洲"},
+{n:"羅馬",u:1,x:55,y:105,region:"歐洲"},
+{n:"馬德里",u:1,x:43,y:105,region:"歐洲"},
 
 /* 北歐 */
-{c:"斯德哥爾摩",country:"瑞典",utc:1,region:"北歐"},
-{c:"奧斯陸",country:"挪威",utc:1,region:"北歐"},
-{c:"雷克雅維克",country:"冰島",utc:0,region:"北歐"},
+{n:"斯德哥爾摩",u:1,x:55,y:70,region:"北歐"},
+{n:"奧斯陸",u:1,x:50,y:70,region:"北歐"},
+{n:"雷克雅維克",u:0,x:30,y:60,region:"北歐"},
 
 /* 大洋洲 */
-{c:"雪梨",country:"澳洲",utc:10,region:"大洋洲"},
-{c:"奧克蘭",country:"紐西蘭",utc:12,region:"大洋洲"},
-{c:"聖誕島",country:"澳洲",utc:7,region:"大洋洲"},
-{c:"Kiritimati",country:"基里巴斯",utc:14,region:"大洋洲"},
+{n:"雪梨",u:10,x:90,y:200,region:"大洋洲"},
+{n:"奧克蘭",u:12,x:105,y:210,region:"大洋洲"},
+{n:"聖誕島",u:7,x:80,y:190,region:"大洋洲"},
+{n:"Kiritimati",u:14,x:115,y:180,region:"大洋洲"},
 
 /* 美洲 */
-{c:"紐約",country:"美國",utc:-5,region:"美洲"},
-{c:"洛杉磯",country:"美國",utc:-8,region:"美洲"},
-{c:"芝加哥",country:"美國",utc:-6,region:"美洲"},
-{c:"鳳凰城",country:"美國",utc:-7,region:"美洲"},
-{c:"檀香山",country:"美國",utc:-10,region:"美洲"},
-{c:"多倫多",country:"加拿大",utc:-5,region:"美洲"},
-{c:"聖保羅",country:"巴西",utc:-3,region:"美洲"}
-
+{n:"紐約",u:-5,x:25,y:110,region:"美洲"},
+{n:"芝加哥",u:-6,x:20,y:115,region:"美洲"},
+{n:"鳳凰城",u:-7,x:15,y:130,region:"美洲"},
+{n:"洛杉磯",u:-8,x:10,y:130,region:"美洲"},
+{n:"檀香山",u:-10,x:5,y:170,region:"美洲"},
+{n:"多倫多",u:-5,x:25,y:95,region:"美洲"},
+{n:"聖保羅",u:-3,x:30,y:170,region:"美洲"}
 ];
 
-const list = document.getElementById("list");
+const map = document.getElementById("map");
+
+/* 建立時區帶 */
+for(let i=-12;i<=14;i++){
+  const z=document.createElement("div");
+  z.className="zone";
+  z.style.left=(i+12)*6+"%";
+  z.onclick=()=>highlightZone(i);
+  map.appendChild(z);
+}
+
+/* 建立城市點 */
+cities.forEach(c=>{
+  const d=document.createElement("div");
+  d.className="dot";
+  d.style.left=c.x+"%";
+  d.style.top=c.y+"px";
+  d.onclick=()=>selectCity(c.n);
+  map.appendChild(d);
+  c.el=d;
+});
+
+/* 清單 */
+const list=document.getElementById("list");
 
 function render(){
+  const regions={};
+  cities.forEach(c=>{
+    if(!regions[c.region]) regions[c.region]=[];
+    regions[c.region].push(c);
+  });
+
   list.innerHTML="";
-  cities.forEach(city=>{
-    const div=document.createElement("div");
-    div.className="city";
-    div.innerText=`${city.c} (${city.country}) UTC${city.utc}`;
-    div.onclick=()=>highlight(city.c);
-    list.appendChild(div);
+  Object.keys(regions).forEach(r=>{
+    const b=document.createElement("div");
+    b.className="block";
+    b.innerHTML=`<div class="title">${r}</div>`;
+    regions[r].forEach(c=>{
+      const div=document.createElement("div");
+      div.className="city";
+      div.innerText=c.n;
+      div.onclick=()=>selectCity(c.n);
+      b.appendChild(div);
+    });
+    list.appendChild(b);
   });
 }
 
-function highlight(name){
-  document.querySelectorAll(".city").forEach(el=>{
-    el.classList.remove("active");
-    if(el.innerText.includes(name)){
-      el.classList.add("active");
-    }
+function selectCity(name){
+  document.querySelectorAll(".city").forEach(c=>c.classList.remove("active"));
+  document.querySelectorAll(".dot").forEach(d=>d.classList.remove("active"));
+
+  const c=cities.find(x=>x.n===name);
+  if(!c)return;
+
+  c.el.classList.add("active");
+}
+
+function highlightZone(u){
+  document.querySelectorAll(".zone").forEach(z=>z.classList.remove("active"));
+  document.querySelectorAll(".dot").forEach(d=>d.classList.remove("active"));
+
+  const zones=document.querySelectorAll(".zone");
+  zones[u+12].classList.add("active");
+
+  cities.filter(c=>c.u===u).forEach(c=>{
+    c.el.classList.add("active");
   });
-  document.getElementById("map").innerText="已選擇："+name;
 }
 
 document.getElementById("search").addEventListener("input",e=>{
   const v=e.target.value;
-  if(!v) return;
-  const found=cities.find(c=>c.c.includes(v));
-  if(found) highlight(found.c);
+  const c=cities.find(x=>x.n.includes(v));
+  if(c) selectCity(c.n);
 });
 
 render();
